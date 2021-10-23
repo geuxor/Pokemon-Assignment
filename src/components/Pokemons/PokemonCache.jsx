@@ -6,18 +6,14 @@ export const currentTime = () => {
 };
 
 export const buildPokemonCache = async (count) => {
+  console.log('Cache ready to build');
+  
   const existingCachedData = getPokemonFromLocalStorage();
-
   const cachedAllData = [];
   let pokeCachedData = {};
-  console.log("cache", existingCachedData.length, count);
+  console.log("Cache:", existingCachedData.length, count);
   if (existingCachedData.length !== count) {
     let y = 0;
-    console.log(
-      "Cache: building cache...",
-      cachedAllData,
-      cachedAllData.length
-    );
     for (let i = 1; i <= count; i++) {
       try {
         const pokemonDetails = await pokemonApi.getPokemonDetails(i + y);
@@ -40,6 +36,7 @@ export const buildPokemonCache = async (count) => {
         }
       } catch (err) {}
     }
+    
     setPokemonToLocalStorage(cachedAllData);
     console.log("CAche: cached build done:", cachedAllData.length);
   } else {
@@ -57,6 +54,8 @@ export const getPokemonFromLocalStorage = () => {
 
     if (data) {
       pokemonCache = JSON.parse(data);
+    } else {
+      console.log('Cache: no localstorage found');
     }
   } catch (e) {
     console.error(e.message);
@@ -68,7 +67,7 @@ export const setPokemonToLocalStorage = (pokemonCache, value) => {
   cleanUpStorage();
   try {
     localStorage.setItem(POKEMON_CACHE, JSON.stringify(pokemonCache));
-    const datafromls = getPokemonFromLocalStorage();
+    // const datafromls = getPokemonFromLocalStorage();
   } catch (e) {
     console.log(e);
   }

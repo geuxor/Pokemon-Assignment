@@ -2,14 +2,18 @@ import React, { useState, useEffect } from "react";
 import PokemonList from "./PokemonList";
 import spinner from "./spinner.gif";
 import Pagination from "./Pagination";
-import { buildPokemonCache } from "./PokemonCache";
+import { buildPokemonCache, getPokemonFromLocalStorage } from "./PokemonCache";
 import "./PokemonPage.style.css";
-import useFetch from "../../helpers/useFetch";
+// import useFetch from "../../helpers/useFetch";
+import pokemonsFetch from "../../helpers/pokemonsFetch";
 
 function PokemonPage() {
+  const [data, setData] = useState({});
   const [pokemons, setPokemons] = useState([]);
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pokemonsCount, setPokemonsCount] = useState(0);
 
   const storedPageUrl = localStorage.getItem("POKEMON_CURRENTURL");
   // console.log("Page: storedPageUrl", storedPageUrl);
@@ -18,14 +22,38 @@ function PokemonPage() {
     storedPageUrl ||
       `https://pokeapi.co/api/v2/pokemon/?offset=0&limit=${limit}`
   );
-  const { error, isLoading, data } = useFetch(currentPageUrl);
+
+  // setIsLoading(true)
+  // const { error, isLoading, data } = useFetch(currentPageUrl);
+
+  let cachedData = getPokemonFromLocalStorage();
+  console.log("Page: cachedData", cachedData.length);
 
   useEffect(() => {
-    const storedLimit = localStorage.getItem("POKEMON_PAGINATION");
-    if (storedLimit) setLimit(storedLimit);
-    // console.log("Page: data", data);
-    if (data) setPokemons(data.results);
-  }, [data]);
+    (async () => {
+      const storedLimit = localStorage.getItem("POKEMON_PAGINATION");
+      if (storedLimit) setLimit(storedLimit);
+      const res = await pokemonsFetch(currentPageUrl);
+      console.log("Page data", res);
+      setPokemonsCount(res.count);
+      setData(res);
+
+      //caching logic
+      if (cachedData.length === res.count) {
+        console.log("Page: found cached data");
+        setPokemons(cachedData);
+        } else {
+          if (res.results) {
+            setPokemons(res.results);
+          }
+          buildPokemonCache(res.count);
+        }
+      //end of caching logic
+      
+    })();
+  }, [currentPageUrl]);
+
+
 
   const onItemsPerPageChange = async (amount) => {
     // console.log("Page: - amountPerPage", amount);
@@ -54,9 +82,8 @@ function PokemonPage() {
 
   return (
     <>
-      {console.log("Page: changing to next*", currentPageUrl, isLoading)}
-      {data && console.log("Page: changing to next", pokemons, data.results)}
-      {error && <div>{error}</div>}
+      {console.log("Page:*", currentPageUrl, data)}
+
       {isLoading ? (
         <div className="spinner">
           <img src={spinner} alt="pokemon pic" />
@@ -80,7 +107,7 @@ function PokemonPage() {
                 currentPageUrl={currentPageUrl}
                 type={"pokemons"}
                 pokemons={pokemons}
-                count={data.count}
+                count={pokemonsCount}
                 offset={offset}
                 limit={limit}
               />
