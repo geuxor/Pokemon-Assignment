@@ -5,7 +5,7 @@ import { useHistory } from "react-router";
 import { Modal, Button } from "antd";
 import { Card } from "antd";
 import "./PokemonDetails.style.css";
-import spinner from "../Spinner/Heart.Spinner";
+import spinner from "./spinner.gif";
 import pokemonApi from "../../services/pokemonApi";
 import { useLocation } from "react-router-dom";
 
