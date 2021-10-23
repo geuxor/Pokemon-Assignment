@@ -1,0 +1,27 @@
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  width: 100vw;
+}
+
+
+.pagination-buttons {
+  padding: 2px ;
+}
+
+.search-field {
+  width: 30vw;
+  padding: 0px 30px;
+  display: flex;
+  flex-direction: row;
+}
+
+.spinner {
+  margin-top: 0px;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
