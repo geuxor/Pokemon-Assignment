@@ -1,9 +1,6 @@
-/* eslint-disable react/prefer-stateless-function */
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useHistory } from "react-router";
-import { Modal, Button } from "antd";
-import { Card } from "antd";
 import "./PokemonDetails.style.css";
 import spinner from "./spinner.gif";
 import pokemonApi from "../../services/pokemonApi";
@@ -11,24 +8,17 @@ import { useLocation } from "react-router-dom";
 
 function PokemonDetails() {
   const [loading, setLoading] = useState(true);
-  const [abilities, setAbilities] = useState([]);
   const [pokemonDetails, setPokemonDetails] = useState({});
   const [flipped, setFlipped] = useState({});
   const { name } = useParams();
   const history = useHistory();
   const location = useLocation();
 
-  // const currentUrl = history.state;
-  // console.log("aaaaaaaa", currentUrl);
-
   useEffect(() => {
-    // console.log("aaaaaaaa", location.state.currentPageUrl);
-    // const pageUrl = location.state.currentPageUrl
     (async () => {
       try {
         console.log("Details: fetching data from API");
         const response = await pokemonApi.getPokemonDetails(name);
-        // console.log("pokemondetails", response.data);
         setPokemonDetails(response.data);
         setLoading(false);
       } catch (err) {
@@ -40,8 +30,6 @@ function PokemonDetails() {
   }, []);
 
   const goBack = () => {
-    console.log("Details: location.state", location.state.currentPageUrl);
-    // history.push(location.state.offset);
     history.replace("/", {
       currentPageUrl: location.state.currentPageUrl,
     });
