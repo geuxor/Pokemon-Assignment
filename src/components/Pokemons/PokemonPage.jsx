@@ -31,8 +31,15 @@ function PokemonPage() {
 
   useEffect(() => {
     (async () => {
+      console.log(
+        "Page: currentPageUrl has been changed",
+        currentPageUrl,
+        offset,
+        limit
+      );
+      
       const storedLimit = localStorage.getItem("POKEMON_PAGINATION");
-      if (storedLimit) setLimit(storedLimit);
+      if (storedLimit) setLimit(parseInt(storedLimit));
       const res = await pokemonsFetch(currentPageUrl);
       console.log("Page data", res);
       setPokemonsCount(res.count);
@@ -41,43 +48,41 @@ function PokemonPage() {
       //caching logic
       if (cachedData.length === res.count) {
         console.log("Page: found cached data");
-        setPokemons(cachedData);
-        } else {
-          if (res.results) {
-            setPokemons(res.results);
-          }
-          buildPokemonCache(res.count);
+        // setPokemons(cachedData);
+        setPokemons(cachedData.slice(offset, offset + limit));
+      } else {
+        if (res.results) {
+          setPokemons(res.results);
         }
+        buildPokemonCache(res.count);
+      }
       //end of caching logic
-      
     })();
   }, [currentPageUrl]);
-
-
 
   const onItemsPerPageChange = async (amount) => {
     // console.log("Page: - amountPerPage", amount);
     setLimit(amount);
     setOffset(0);
     setCurrentPageUrl(
-      `https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${amount}`
+      `https://pokeapi.co/api/v2/pokemon/?offset=${0}&limit=${amount}`
     );
     localStorage.setItem("POKEMON_PAGINATION", amount);
     localStorage.setItem(
       "POKEMON_CURRENTURL",
-      `https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${amount}`
+      `https://pokeapi.co/api/v2/pokemon/?offset=${0}&limit=${amount}`
     );
   };
 
   const onPrevNextPageChange = async (currentUrl) => {
-    // console.log("Page: currentUrl", currentUrl);
-    // console.log("Page: 1111111111");
+    console.log("Page: currentUrl", currentUrl);
+    //as soon as caching exists - next/prev doesn't work
     if (currentUrl) setCurrentPageUrl(currentUrl);
     localStorage.setItem("POKEMON_CURRENTURL", currentUrl);
-    // console.log("Page: 2222222222", currentUrl);
-    if (data) setPokemons(data.results);
-    // console.log("Page: 3333333333", data.results);
-    // console.log("Page: fetch changing to next url:", pokemons, currentUrl);
+    console.log("Page: currentPageUrl ", offset, limit);
+    setOffset(offset + limit);
+    //maybe this can be removed
+    // if (data) setPokemons(data.results);
   };
 
   return (
