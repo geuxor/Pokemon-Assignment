@@ -1,38 +1,53 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./PokemonList.style.css";
 import { Layout } from "antd";
 import PokemonCard from "./PokemonCard";
+import spinner from "./spinner.gif";
 const { Content } = Layout;
 
-function PokemonList({ type, pokemons, count, offset, limit, currentPageUrl }) {
-  console.log("List: pokemons data", pokemons.length,offset, limit );
+function PokemonList({
+  type,
+  pokemons,
+  count,
+  offset,
+  limit,
+  currentPageUrl,
+  isLoading,
+}) {
+  console.log("List: pokemons data loading", pokemons.length, offset, limit, isLoading);
   console.log("List: currentPageUrl", currentPageUrl);
 
   return (
     <div>
       {pokemons && (
         <>
-          <Content style={{ padding: "0 50px" }}>
-            <div className="site-layout-content">
-              {console.log("List: ", pokemons)}
-              <>
-                {pokemons.map((p, i) => {
-                  return (
-                    <>
-                      <br />
-                      <PokemonCard
-                        key={i}
-                        pokemon={p}
-                        currentPageUrl={currentPageUrl}
-                        offset={offset}
-                      />
-                      ;
-                    </>
-                  );
-                })}
-              </>
+          {isLoading ? (
+            <div className="spinner">
+              <img src={spinner} alt="pokemon pic" />
             </div>
-          </Content>
+          ) : (
+            <Content style={{ padding: "0 50px" }}>
+              <div className="site-layout-content">
+                {console.log("List: ", pokemons)}
+                <>
+                  {pokemons.map((p, i) => {
+                    return (
+                      <>
+                        <br />
+                        <PokemonCard
+                          key={i}
+                          pokemon={p}
+                          currentPageUrl={currentPageUrl}
+                          offset={offset}
+                        />
+                        ;
+                      </>
+                    );
+                  })}
+                </>
+              </div>
+            </Content>
+          )}
         </>
       )}
     </div>
@@ -40,5 +55,3 @@ function PokemonList({ type, pokemons, count, offset, limit, currentPageUrl }) {
 }
 
 export default PokemonList;
-
-

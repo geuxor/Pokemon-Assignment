@@ -5,9 +5,9 @@ export const currentTime = () => {
   return Date.now();
 };
 
-export const buildPokemonCache = async (count) => {
-  console.log('Cache ready to build');
-  
+export const buildPokemonCache = async (count, onCachedEnabled) => {
+  console.log("Cache ready to build");
+
   const existingCachedData = getPokemonFromLocalStorage();
   const cachedAllData = [];
   let pokeCachedData = {};
@@ -36,14 +36,16 @@ export const buildPokemonCache = async (count) => {
         }
       } catch (err) {}
     }
-    
+
     setPokemonToLocalStorage(cachedAllData);
     console.log("CAche: cached build done:", cachedAllData.length);
+    onCachedEnabled(true);
   } else {
     console.log(
       "CAche: No Building needed - existingCachedData",
       existingCachedData.length
     );
+    
   }
 };
 

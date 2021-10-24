@@ -12,18 +12,20 @@ function PokemonPage() {
   const [pokemons, setPokemons] = useState([]);
   const [pokemonsCount, setPokemonsCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const storedPageUrl = localStorage.getItem("POKEMON_CURRENTURL");
-  const storedOffset = localStorage.getItem("POKEMON_OFFSET");
-  console.log("Page storedOffset", storedOffset);
-
+  const [cachedEnabled, setCachedEnabled] = useState(false);
   const storedLimit = localStorage.getItem("POKEMON_PAGINATION");
   const [limit, setLimit] = useState(parseInt(storedLimit) || 10);
+  const storedOffset = localStorage.getItem("POKEMON_OFFSET");
   const [offset, setOffset] = useState(parseInt(storedOffset) || 0);
+  const storedPageUrl = localStorage.getItem("POKEMON_CURRENTURL");
   const [currentPageUrl, setCurrentPageUrl] = useState(
     storedPageUrl ||
       `https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${limit}`
   );
-  const [search, setSearch] = useState("");
+  let storedSearch = localStorage.getItem("POKEMON_SEARCH");
+  console.log("storedSearch", storedSearch);
+
+  const [search, setSearch] = useState(storedSearch || "");
   const [cachedSearchTerm, setCachedSearchTerm] = useState("");
   const [searchCleared, setSearchCleared] = useState(true);
   const [filteredItems, setFilteredItems] = useState([]);
@@ -35,8 +37,18 @@ function PokemonPage() {
   let cachedData = getPokemonFromLocalStorage();
   // console.log("Page: cachedData", cachedData.length);
 
+  const onCachedEnabled = () => {
+    cachedData = getPokemonFromLocalStorage();
+    storedSearch = localStorage.getItem("POKEMON_SEARCH");
+    console.log("enabling cache from cache", storedSearch, search);
+    setCachedEnabled(true);
+    onSearch(storedSearch, "cached");
+    setSearchOn(false);
+  };
+
   useEffect(() => {
     (async () => {
+      // setIsLoading(true);
       console.log(
         "Page: currentPageUrl currentPageUrl offset changed -",
         currentPageUrl,
@@ -44,7 +56,7 @@ function PokemonPage() {
         limit
       );
       console.log("Page searchcleared", searchCleared);
-      
+
       // const storedLimit = localStorage.getItem("POKEMON_PAGINATION");
       if (storedLimit) setLimit(parseInt(storedLimit));
       console.log("storedOffset", storedOffset);
@@ -59,16 +71,25 @@ function PokemonPage() {
       if (cachedData.length === res.count) {
         console.log("Page: found cached data foundOffset", offset);
         // console.log("Page: pokemons",offset,limit,cachedData.slice(offset, offset + limit));
-        if (searchCleared) setPokemons(cachedData.slice(offset, offset + limit));
+        if (search) {
+          console.log("onSearch", storedSearch, search);
+          onSearch(search, "cached")
+        } else {
+          if (searchCleared) setPokemons(cachedData.slice(offset, offset + limit));
+        }
+        setCachedEnabled(true);
       } else {
         if (res.results) {
           setPokemons(res.results);
         }
-        buildPokemonCache(res.count);
+        buildPokemonCache(res.count, onCachedEnabled);
       }
       //end of caching logic
-      
+      // setIsLoading(false);
     })();
+    return () => {
+      console.log("when the fuck did this unmount?");
+    };
   }, [currentPageUrl, searchCleared]);
 
   const onItemsPerPageChange = async (amount) => {
@@ -92,42 +113,54 @@ function PokemonPage() {
     // console.log("Page: currentUrl 1", currentUrl);
     if (currentUrl) setCurrentPageUrl(currentUrl);
     localStorage.setItem("POKEMON_CURRENTURL", currentUrl);
-    localStorage.setItem("POKEMON_OFFSET", offset + limit);
+    
     console.log("Page: localStorage offset ", offset, limit);
     if (direction === "prev") {
       setOffset(offset - limit);
+      localStorage.setItem("POKEMON_OFFSET", offset - limit);
       console.log("PAge Prev offset", offset);
     } else {
       setOffset(offset + limit);
+      localStorage.setItem("POKEMON_OFFSET", offset + limit);
       console.log("PAge Next offset", offset);
     }
   };
 
-  const onSearch = async (value) => {
-    localStorage.setItem("POKEMON_SEARCH", value);
-    console.log("Page: onSearch ", value);
+  const onSearch = async (value, cached) => {
+    // setIsLoading(true);
+    console.log("Page: onSearch ", value.length, 'cache', cached);
+    localStorage.getItem("POKEMON_SEARCH", value);
     if (!value) {
+      console.log("onSearch no value");
+      localStorage.setItem("POKEMON_SEARCH", value);
       setSearchCleared(true);
       setSearch("");
       setFilteredItems("");
       setCachedSearchTerm(value);
-      return null;
+      // return null;
     } else {
-      setAbilityPokemons([]);
-      setSearchOn(true);
-      setSearch(value);
-      let foundByName = await pokeFilter(value);
-      console.log("Page Search foundbyname ", foundByName);
-      
-      // await setFilteredItems(foundByName);
-      setPokemons(foundByName);
-      // setCachedSearchTerm(value);
-      setSearchCleared(false);
+      localStorage.setItem("POKEMON_SEARCH", value);
+      console.log("cached enabled - Loading?", cached, cachedEnabled);
+
+      if (!cached && !cachedEnabled) {
+        console.log("cached NOT enabled");
+        setSearchOn(true);
+      } else {
+        // setAbilityPokemons([]);
+        setSearch(value);
+        let foundByName = await pokeFilter(value);
+        console.log("Page Search foundbyname ", foundByName);
+        // await setFilteredItems(foundByName);
+        setPokemons(foundByName);
+        // setCachedSearchTerm(value);
+        setSearchCleared(false);
+        // setIsLoading(false);
+      }
     }
   };
 
   const pokeFilter = async (value) => {
-    console.log("Search pokefilter", value);
+    console.log("Search pokefilter", value, cachedData);
 
     return await cachedData.filter((pokemon) => {
       return pokemon.name.indexOf(value) !== -1;
@@ -146,7 +179,7 @@ function PokemonPage() {
         filteredItems
       )}
 
-      {isLoading ? (
+      {searchOn ? (
         <div className="spinner">
           <img src={spinner} alt="pokemon pic" />
         </div>
@@ -173,6 +206,7 @@ function PokemonPage() {
                 </div>
               </div>
               <PokemonList
+                isLoading={isLoading}
                 currentPageUrl={currentPageUrl}
                 type={"pokemons"}
                 pokemons={pokemons}
