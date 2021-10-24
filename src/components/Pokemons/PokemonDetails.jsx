@@ -30,6 +30,11 @@ function PokemonDetails() {
   }, []);
 
   const goBack = () => {
+    console.log(
+      "Details currentPageUrl",
+      location.state.currentPageUrl
+    );
+    
     history.replace("/", {
       currentPageUrl: location.state.currentPageUrl,
     });

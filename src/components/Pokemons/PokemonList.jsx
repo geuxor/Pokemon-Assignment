@@ -5,7 +5,8 @@ import PokemonCard from "./PokemonCard";
 const { Content } = Layout;
 
 function PokemonList({ type, pokemons, count, offset, limit, currentPageUrl }) {
-  console.log("List: pokemons data", pokemons);
+  console.log("List: pokemons data", pokemons.length,offset, limit );
+  console.log("List: currentPageUrl", currentPageUrl);
 
   return (
     <div>

@@ -10,17 +10,19 @@ import pokemonsFetch from "../../helpers/pokemonsFetch";
 function PokemonPage() {
   const [data, setData] = useState({});
   const [pokemons, setPokemons] = useState([]);
-  const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
   const [pokemonsCount, setPokemonsCount] = useState(0);
-
+  // const [storedOffset, setStoredOffset] = useState(null);
   const storedPageUrl = localStorage.getItem("POKEMON_CURRENTURL");
-  // console.log("Page: storedPageUrl", storedPageUrl);
-
+  const storedOffset = localStorage.getItem("POKEMON_OFFSET");
+  const storedLimit = localStorage.getItem("POKEMON_PAGINATION");
+  console.log("Page: storedPageUrl", storedPageUrl);
+  
+  const [limit, setLimit] = useState(parseInt(storedLimit) || 10);
+  const [offset, setOffset] = useState(parseInt(storedOffset) || 0);
   const [currentPageUrl, setCurrentPageUrl] = useState(
     storedPageUrl ||
-      `https://pokeapi.co/api/v2/pokemon/?offset=0&limit=${limit}`
+      `https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${limit}`
   );
 
   // setIsLoading(true)
@@ -31,13 +33,8 @@ function PokemonPage() {
 
   useEffect(() => {
     (async () => {
-      console.log(
-        "Page: currentPageUrl has been changed",
-        currentPageUrl,
-        offset,
-        limit
-      );
-      
+      console.log("Page: currentPageUrl changed -",currentPageUrl,offset,limit);
+
       const storedLimit = localStorage.getItem("POKEMON_PAGINATION");
       if (storedLimit) setLimit(parseInt(storedLimit));
       const res = await pokemonsFetch(currentPageUrl);
@@ -47,8 +44,13 @@ function PokemonPage() {
 
       //caching logic
       if (cachedData.length === res.count) {
-        console.log("Page: found cached data");
+        console.log("Page: found cached data foundOffset", offset);
         // setPokemons(cachedData);
+        console.log(
+          "Page: pokemons",
+          offset, limit, cachedData.slice(offset, offset + limit)
+        );
+        
         setPokemons(cachedData.slice(offset, offset + limit));
       } else {
         if (res.results) {
@@ -61,9 +63,10 @@ function PokemonPage() {
   }, [currentPageUrl]);
 
   const onItemsPerPageChange = async (amount) => {
-    // console.log("Page: - amountPerPage", amount);
+    console.log("Page: - amountPerPage", amount);
     setLimit(amount);
     setOffset(0);
+    localStorage.setItem("POKEMON_OFFSET", 0);
     setCurrentPageUrl(
       `https://pokeapi.co/api/v2/pokemon/?offset=${0}&limit=${amount}`
     );
@@ -74,20 +77,25 @@ function PokemonPage() {
     );
   };
 
-  const onPrevNextPageChange = async (currentUrl) => {
-    console.log("Page: currentUrl", currentUrl);
-    //as soon as caching exists - next/prev doesn't work
+  const onPrevNextPageChange = async (currentUrl, direction) => {
+    console.log("Page: currentUrl 1", currentUrl);
+
     if (currentUrl) setCurrentPageUrl(currentUrl);
     localStorage.setItem("POKEMON_CURRENTURL", currentUrl);
-    console.log("Page: currentPageUrl ", offset, limit);
-    setOffset(offset + limit);
+    localStorage.setItem("POKEMON_OFFSET", offset+limit);
+    console.log("Page: currentPageUrl 1 ", offset, limit);
+    if (direction === "prev") {
+      setOffset(offset - limit);
+    } else {
+      setOffset(offset + limit);
+    }
     //maybe this can be removed
     // if (data) setPokemons(data.results);
   };
 
   return (
     <>
-      {console.log("Page:*", currentPageUrl, data)}
+      {console.log("Page:*", currentPageUrl, data, offset, limit, pokemons.length)}
 
       {isLoading ? (
         <div className="spinner">

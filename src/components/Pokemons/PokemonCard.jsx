@@ -102,6 +102,8 @@ function PokemonCard({ pokemon, currentPageUrl, offset }) {
     //   pathname: `/pokemon/${pokemon.name}`,
     //   state: { detail: "response" },
     // });
+    console.log("Card: currentPageUrl", currentPageUrl);
+    
     history.push(`/pokemon/${pokemon.name}`, {
       currentPageUrl: currentPageUrl
     });

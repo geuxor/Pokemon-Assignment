@@ -16,12 +16,12 @@ export default function Pagination({
 
       <div className="pagination-buttons">
         {gotoPrevPage && (
-          <button onClick={() => onPrevNextPageChange(gotoPrevPage)}>
+          <button onClick={() => onPrevNextPageChange(gotoPrevPage, "prev")}>
             Previous
           </button>
         )}
         {gotoNextPage && (
-          <button onClick={() => onPrevNextPageChange(gotoNextPage)}>
+          <button onClick={() => onPrevNextPageChange(gotoNextPage, "next")}>
             Next
           </button>
         )}
