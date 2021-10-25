@@ -6,9 +6,11 @@
   width: 100vw;
 }
 
-
+.pagination {
+  padding: 20px;
+}
 .pagination-buttons {
-  padding: 2px ;
+  padding: 2px;
 }
 
 .search-field {
@@ -19,9 +21,19 @@
 }
 
 .spinner {
-  margin-top: 0px;
+  margin-top: 250px;
   padding: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#cached-enabled {
+    display: flex;
+    align-items: start;
+}
+
+#cached-enabled .spinner-small {
+  width: 20px;
+  padding: 2px;
 }
