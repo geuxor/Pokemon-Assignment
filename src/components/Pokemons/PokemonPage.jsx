@@ -249,10 +249,10 @@ function PokemonPage() {
     console.log("offset onAbilitySort", offset);
     setSearchOn(false);
     if (e !== "all") {
-      localStorage.setItem("PokemonAbilitySort", e);
+      localStorage.setItem("POKEMON_ABILITY", e);
       getAbilityPokes(e);
     } else {
-      localStorage.removeItem("PokemonAbilitySort");
+      localStorage.removeItem("POKEMON_ABILITY");
       setAbilityPokemons([]);
     }
   };

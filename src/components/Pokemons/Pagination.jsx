@@ -6,7 +6,6 @@ export default function Pagination({
   onItemsPerPageChange,
   pokemonsPerPage,
   onPrevNextPageChange,
-  isLoading,
 }) {
 
   return (
