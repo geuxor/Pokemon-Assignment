@@ -1,7 +1,7 @@
 /* eslint-disable react/prefer-stateless-function */
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
-import { Modal, Button } from "antd";
+import { Button } from "antd";
 import { Card } from "antd";
 import "./PokemonCard.style.css";
 import spinner from "./spinner.gif";
@@ -12,8 +12,6 @@ function PokemonCard({ pokemon, currentPageUrl, offset }) {
   const [loading, setLoading] = useState(true);
   const [pokemonDetails, setPokemonDetail] = useState({});
   // const [pokemonDetailIndex, setPokemonDetailIndex] = useState();
-  const [height, setHeight] = useState(0);
-  const [weight, setWeight] = useState(0);
   const [abilities, setAbilities] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
   // const [, setPokemonIndex] = useState("");

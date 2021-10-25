@@ -2,7 +2,6 @@ import React from "react";
 import "./PokemonList.style.css";
 import { Layout } from "antd";
 import PokemonCard from "./PokemonCard";
-import spinner from "./spinner.gif";
 const { Content } = Layout;
 
 function PokemonList({ type, pokemons, count, offset, limit, currentPageUrl }) {

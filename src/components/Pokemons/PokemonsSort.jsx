@@ -7,19 +7,29 @@ function PokemonsSort({
   searchOn,
   cachedDataLength,
   sortSelection,
+  abilitySelection,
+  abilityReset,
+  sortReset,
 }) {
   const [abilities, setAbilities] = useState([{ name: "all" }]);
   const [storedAbility, setStoredAbility] = useState([]);
-  console.log("Pokemon Sort sortSelection", sortSelection);
-  
+  console.log(
+    "Pokemon Sort sortSelection",
+    sortSelection,
+    abilityReset,
+    sortReset
+  );
+
   useEffect(() => {
+    console.log("Pokemon Sort -on Ability Sort useEffect");
+
     (async () => {
       try {
         const response = await pokemonApi.getPokemonAbilities();
         response.data.results.unshift({ name: "all" });
         setAbilities(response.data.results);
         const ability = { target: { value: "" } };
-        ability.target.value = localStorage.getItem("PokemonAbilitySort");
+        ability.target.value = localStorage.getItem("POKEMON_ABILITY");
         setStoredAbility(ability.target.value);
         if (ability.target.value) {
           // console.log(ability, " found on localstorage");
@@ -29,6 +39,8 @@ function PokemonsSort({
         console.log(err);
       }
     })();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -37,7 +49,7 @@ function PokemonsSort({
       <select
         disabled={cachedDataLength < 1118 && true}
         onChange={onSort}
-        value={sortSelection}
+        value={sortReset || sortSelection}
       >
         <option key="1" value="id">
           {" "}
@@ -61,6 +73,7 @@ function PokemonsSort({
       <select
         disabled={cachedDataLength < 1118 && true}
         onChange={onAbilitySort}
+        value={abilityReset || abilitySelection}
       >
         {abilities.map((a, i) => {
           if (!searchOn) {

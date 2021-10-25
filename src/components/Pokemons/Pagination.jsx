@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import "./PokemonPage.style.css";
 export default function Pagination({
   gotoNextPage,

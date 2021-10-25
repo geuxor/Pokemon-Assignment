@@ -34,13 +34,20 @@ function PokemonPage() {
   const [cachedSearchTerm, setCachedSearchTerm] = useState("");
   const [searchCleared, setSearchCleared] = useState(true);
   const [filteredItems, setFilteredItems] = useState([]);
-  const [abilityPokemons, setAbilityPokemons] = useState([]);
   const [searchOn, setSearchOn] = useState(false);
 
-  const [cachedSortTerm, setCachedSortTerm] = useState("");
+  const storedAbilitySelection = localStorage.getItem("POKEMON_ABILITY");
+  const [abilitySelection, setAbilitySelection] = useState(
+    storedAbilitySelection || ""
+  );
+  const [abilityItems, setAbilityItems] = useState([]);
+
   const [sortedItems, setSortedItems] = useState([]);
   const storedSortSelection = localStorage.getItem("POKEMON_SORT");
   const [sortSelection, setSortSelection] = useState(storedSortSelection || "");
+
+  const [abilityReset, setAbilityReset] = useState(null);
+  const [sortReset, setSortReset] = useState(null);
 
   let cachedData = getPokemonFromLocalStorage();
   console.log("Page cachedData", cachedData.length);
@@ -96,16 +103,22 @@ function PokemonPage() {
           console.log("Page offset limit ", offset, limit);
           if (searchCleared) console.log("Page setting Pokemons *********");
           console.log("Page cachedData sortedItems", sortedItems);
+          console.log("Page ability Pokemons", abilityItems);
+
           console.log(
             "Page offset, offset + limit",
             typeof offset,
             typeof limit
           );
-          
-          if (sortedItems.length > 0) {
 
+          if (sortedItems.length > 0) {
+            console.log("Page setting pokemons to sortedItems");
             setPokemons(sortedItems.slice(offset, offset + limit));
+          } else if (abilityItems.length > 0) {
+            console.log("Page setting pokemons to ability items");
+            setPokemons(abilityItems);
           } else {
+            console.log("Page setting pokemons to cachedData");
             setPokemons(cachedData.slice(offset, offset + limit));
           }
         }
@@ -121,7 +134,8 @@ function PokemonPage() {
     return () => {
       console.log("when the did this unmount?");
     };
-  }, [currentPageUrl, searchCleared, sortedItems]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPageUrl, searchCleared, sortedItems, abilityItems]);
 
   useEffect(
     () => {
@@ -134,22 +148,89 @@ function PokemonPage() {
         weight: (a, b) => a.weight - b.weight,
       };
       if (sortSelection) {
-        // setSortedItems(pokemons.sort(sorts[sortSelection]));
-        // setPokemons(cachedData.sort(sorts[sortSelection]));
-
-        setSortedItems(cachedData.sort(sorts[sortSelection]));
-      }
-      console.log("sortSelection", typeof storedOffset);
-      
-      if (sortSelection) {
+        // setAbilitySelection("all")
+        // localStorage.removeItem("POKEMON_ABILITY");
+        // setAbilityItems([])
+        setAbilityReset("all");
+        setSortReset(null);
         setOffset(parseInt(storedOffset));
+        setSortedItems(cachedData.sort(sorts[sortSelection]));
+        console.log("cached Data has been sorted??", cachedData[0]);
+        
       } else {
         console.log("Page sortSelection offset **");
-        
       }
+      console.log("sortSelection", typeof storedOffset);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [sortSelection]
+  );
+
+  useEffect(
+    () => {
+      (async () => {
+        if (abilitySelection !== "all") {
+          console.log("get Ability Pokes name", abilitySelection);
+
+          let foundPokemonsAbility = [];
+          try {
+            const response = await pokemonApi.getAbilityPokemons(
+              abilitySelection
+            );
+            console.log("Ability response", response.data.pokemon);
+
+            const abilityPokemons = response.data.pokemon;
+            for (let i = 0; i < abilityPokemons.length; i++) {
+              console.log(
+                "xxx ability",
+                abilityPokemons[i].pokemon.url,
+                abilityPokemons[i].pokemon.url.split("/")[
+                  abilityPokemons[i].pokemon.url.split("/").length - 2
+                ]
+              );
+              
+              let id = parseInt(
+                abilityPokemons[i].pokemon.url.split("/")[
+                  abilityPokemons[i].pokemon.url.split("/").length - 2
+                ]
+              );
+              console.log(
+                "ability id",
+                id,
+                cachedData[id - 1],
+                cachedData
+              );
+
+              if (cachedData[id - 1])
+                foundPokemonsAbility.push(cachedData[id - 1]);
+            }
+            console.log("foundPokemonsAbility", foundPokemonsAbility);
+            
+            if (foundPokemonsAbility.length === 0) {
+              alert("nothing found");
+            } else {
+              // setSortedItems(foundPokemonsAbility);
+              
+              setSortedItems([]);
+              // setSortSelection("-")
+              // localStorage.removeItem("POKEMON_SORT");
+              setAbilityReset(null);
+              setSortReset("id");
+              setAbilityItems(foundPokemonsAbility);
+              // setPokemons(foundPokemonsAbility);
+              setOffset(0);
+              console.log("Ability foundPokemonsAbility", foundPokemonsAbility);
+            }
+          } catch (err) {
+            console.log(err);
+          }
+        } else {
+          setAbilityItems([]);
+        }
+      })();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [abilitySelection]
   );
 
   const onItemsPerPageChange = async (amount) => {
@@ -234,47 +315,58 @@ function PokemonPage() {
     } else {
       localStorage.setItem("POKEMON_SORT", e);
     }
-      setOffset(0);
-      localStorage.setItem("POKEMON_OFFSET", 0);
-      localStorage.setItem("POKEMON_CURRENTURL",`https://pokeapi.co/api/v2/pokemon/?offset=${0}&limit=${limit}`);
-      // data.previous = null
-      // console.log("resetting data.previous");
-      // setData(data);
-    
+    setOffset(0);
+    localStorage.setItem("POKEMON_OFFSET", 0);
+    localStorage.setItem(
+      "POKEMON_CURRENTURL",
+      `https://pokeapi.co/api/v2/pokemon/?offset=${0}&limit=${limit}`
+    );
+    // data.previous = null
+    // console.log("resetting data.previous");
+    // setData(data);
+
     setSortedItems([]);
     setSortSelection(e);
   };
 
   const onAbilitySort = async (e) => {
-    console.log("offset onAbilitySort", offset);
+    console.log("on Ability Sort", e);
     setSearchOn(false);
     if (e !== "all") {
       localStorage.setItem("POKEMON_ABILITY", e);
-      getAbilityPokes(e);
+      
+      // getAbilityPokes(e);
     } else {
       localStorage.removeItem("POKEMON_ABILITY");
-      setAbilityPokemons([]);
+      setAbilityItems([]);
     }
+    setAbilitySelection(e);
   };
 
   const getAbilityPokes = async (name) => {
-    console.log("offset getAbilityPokes", offset);
+    console.log("get Ability Pokes name", name);
 
     let foundPokemonsAbility = [];
     try {
       const response = await pokemonApi.getAbilityPokemons(name);
-      const abilityArr = response.data.pokemon;
-      for (let i = 0; i < abilityArr.length; i++) {
+      console.log("Ability response", response.data.pokemon);
+
+      const abilityPokemons = response.data.pokemon;
+      for (let i = 0; i < abilityPokemons.length; i++) {
         let id = parseInt(
-          abilityArr[i].pokemon.url.split("/")[
-            abilityArr[i].pokemon.url.split("/").length - 2
+          abilityPokemons[i].pokemon.url.split("/")[
+            abilityPokemons[i].pokemon.url.split("/").length - 2
           ]
         );
-        if (cachedData[id]) foundPokemonsAbility.push(cachedData[id]);
+        // console.log("ability id", id, cachedData[id - 1]);
+
+        if (cachedData[id - 1]) foundPokemonsAbility.push(cachedData[id - 1]);
       }
-      setAbilityPokemons(foundPokemonsAbility);
+      // setSortedItems(foundPokemonsAbility);
+      // setAbilityPokemons(foundPokemonsAbility)
+      // setPokemons(foundPokemonsAbility);
       setOffset(0);
-      console.log("offset getAbilityPokes", offset);
+      console.log("offset get Ability Pokes", offset);
     } catch (err) {
       console.log(err);
     }
@@ -325,9 +417,11 @@ function PokemonPage() {
                     onSort={(e) => onSort(e.target.value)}
                     onAbilitySort={(e) => onAbilitySort(e.target.value)}
                     searchOn={searchOn}
-                    cachedSortTerm={cachedSortTerm}
                     cachedDataLength={cachedData.length}
                     sortSelection={sortSelection}
+                    abilitySelection={abilitySelection}
+                    sortReset={sortReset}
+                    abilityReset={abilityReset}
                   />
                 </div>
                 {!cachedEnabled && (
