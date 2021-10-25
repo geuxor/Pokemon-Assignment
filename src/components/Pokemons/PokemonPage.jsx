@@ -233,14 +233,14 @@ function PokemonPage() {
       localStorage.removeItem("POKEMON_SORT");
     } else {
       localStorage.setItem("POKEMON_SORT", e);
+    }
       setOffset(0);
       localStorage.setItem("POKEMON_OFFSET", 0);
       localStorage.setItem("POKEMON_CURRENTURL",`https://pokeapi.co/api/v2/pokemon/?offset=${0}&limit=${limit}`);
-      data.previous = null
-      console.log("resetting data.previous");
-      
-      setData(data);
-    }
+      // data.previous = null
+      // console.log("resetting data.previous");
+      // setData(data);
+    
     setSortedItems([]);
     setSortSelection(e);
   };
