@@ -57,7 +57,7 @@ Runs Test files using JEST/Testing Library
 **More Details** "/pokemon/:id" => PokemonDetails\
 
 
-# Dev dependencies included
+# Dependencies included
 - @testing-library/jest-dom
 - @testing-library/react
 - @testing-library/user-event
