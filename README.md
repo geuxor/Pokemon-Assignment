@@ -7,10 +7,12 @@ A  web application to list all Pokémon and show paginated results from the [Pok
 
 This app is accompanied by unit tests
 
+
 # Technology used
 - React.js
 - Testing-library
 - CSS
+
 
 # Functionality
 • User can choose the number of cards available per page (10, 20 and 50)
@@ -21,74 +23,64 @@ This app is accompanied by unit tests
 • User can see a details page with all information for each Pokémon
 • User can go back to the previous page
 
-# Getting Started
 
-# Frontend
+# Getting Started
+## Environment Variables
+Please add the following lines to your ".env" file located in your Root Folder. If it does not exist it needs to be created.
+
+>REACT_APP_POKEMON_API=https://pokeapi.co/api/v2
+
+## Running the Frontend
 - `cd <dir_name>`
 - `npm i`
 - `npm start`
 - Browser would automatically open pointing to http://localhost:3000/
 
-# Environment Variables
-Please add the following lines to your ".env" file located in your Root Folder. If it does not exist it needs to be created.
-
-REACT_APP_POKEMON_API=https://pokeapi.co/api/v2
-
-# Testing 
+## Testing the App
 - `npm run test`
 - `a`
 
-# Routes & Architecture Flow
-**"Display Orders"**  => /orders     => Orders        => ShopApi \
-**"More Details"**    => /orders/:id => OrderDetails  => OrderItem  => OrderLine \
-**"Create Order"**    => order/new   => OrderCreate   => ShopApi
 
-## Available Scripts
+# Available Scripts
 In the project directory you can run:
 #### - "start": "react-scripts start"
 Opens [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-#### - "build": "react-scripts build"
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
 #### - "test": "react-scripts test"
 Runs Test files using JEST/Testing Library
 
-#### - "dev": "REACT_APP_API_DOMAIN=development npm start"
-Runs the app in the development mode.\
-Opens [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-## NPM packages included
-- @ant-design/icons: 4.6.4
-- antd: 4.16.13
-- axios: 0.21.4
-- react: 17.0.2
-- react-dom: 17.0.2
-- react-router-dom: 5.3.0
-- react-scripts: 4.0.3
-- react-toastify: 7.0.4
-
-## Dev dependencies included
-- @types/react-router-dom: 5.1.9
-- @typescript-eslint/eslint-plugin: 4.31.2
-- @typescript-eslint/parser: 4.31.2
-- eslint: 7.32.0
-- eslint-plugin-react: 7.26.0
-- typescript: 4.1.2
-- @testing-library/jest-dom: 5.11.4
-- @testing-library/react: 11.1.0
-- @testing-library/user-event: 12.1.10
-- @types/jest: 26.0.15
-- @types/node: 12.0.0
-- @types/react: 17.0.0
-- @types/react-dom: 17.0.0
+# Routes & Architecture Flow
+**Display Pokemons "/"** => App => BrowserRouter => Router => PokemonPage => PokemonList\
+**Pagination**<span style="padding-left: 424px;"> => Pagination</span><br/>
+**Sorting**<span style="padding-left: 445px;"> => Sort</span><br/>
+**Searching**<span style="padding-left: 430px;"> => Search</span><br/>
+**More Details** "/pokemon/:id" => PokemonDetails\
 
 
-LIMITATIONS
+# Dev dependencies included
+- @testing-library/jest-dom
+- @testing-library/react
+- @testing-library/user-event
+- @types/jest 
+- @types/node
+- @types/react
+- @types/react-dom
+- antd 
+- axios
+- react
+- react-dom
+- react-router-dom
+- react-scripts
 
-IMPROVEMENTS
 
-INSTALLATION
-
-ARCHITECTURE
+# Limitations
+- When sorting by ability you must re-select "all" before being able to sort by name/id/height/weight 
+- When sorting by name/id/height/weight you must re-select "-" before being able to sort by ability
+- GraphQL would have allowed caching of all items without the need to create customized object
+- A styling framework would have provided better consistency across the design of elements and better UX design
+- Too many renders are occurring due to the amount of State Hooks
+- Loading time and efficiency could be improved through code optimization
+- Cleaner code for PokemonPage would have allowed easier debugging and better separation of concerns
+- No keyboard navigation
+- No Linter configuration
+- To clear Search input field the close-circle that appears at input must be pressed 
