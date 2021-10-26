@@ -35,6 +35,7 @@ Alternatively you can rename `env.example` to `.env` in your root folder.
 >REACT_APP_POKEMON_API=https://pokeapi.co/api/v2
 
 ## Running the Frontend
+- `fork the repo`
 - `cd <dir_name>`
 - `npm i`
 - `npm start`
