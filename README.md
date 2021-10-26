@@ -43,10 +43,10 @@ Please add the following lines to your ".env" file located in your Root Folder. 
 
 # Available Scripts
 In the project directory you can run:
-#### - "start": "react-scripts start"
+#### - `start: react-scripts start`
 Opens [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-#### - "test": "react-scripts test"
+#### - `test: react-scripts test`
 Runs Test files using JEST/Testing Library
 
 # Routes & Architecture Flow
