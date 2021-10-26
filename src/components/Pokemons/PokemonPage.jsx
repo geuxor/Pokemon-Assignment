@@ -313,7 +313,7 @@ function PokemonPage() {
                 />
               )}
             </div>
-            <div key={"pagination2"} className="pagination-bottom">
+            <div key={"pagination2"} className="pagination-main">
               <Pagination
                 gotoNextPage={data.next}
                 gotoPrevPage={data.previous}
