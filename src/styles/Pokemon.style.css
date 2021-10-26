@@ -10,10 +10,6 @@
   padding: 20px;
 }
 
-.pagination-buttons {
-  padding: 2px;
-}
-
 .pagination {
   display: flex;
   flex-direction: row;
