@@ -8,7 +8,7 @@ A  web application to list all Pokémon and show paginated results from the [Pok
 This app is accompanied by unit tests
 
 <p align="center">
-   <img src="./readmeFiles/front-app.png" alt="front" width="350" >
+   <img src="./readmeFiles/front-app.png" alt="front" width="500" >
   </p>
 
 # Technology used
