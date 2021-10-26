@@ -36,7 +36,9 @@ Alternatively you can rename `env.example` to `.env` in your root folder.
 
 ## Running the Frontend
 - `fork the repo`
-- `cd <dir_name>`
+- `Press the Code Button and copy the SSH key - git@github.com:geuxor/react-pokemons-app.git` 
+- `Perform a "git clone git@github.com:geuxor/react-pokemons-app.git" in your local directory
+- `cd react-pokemons-app`
 - `npm i`
 - `npm start`
 - Browser would automatically open pointing to http://localhost:3000/
