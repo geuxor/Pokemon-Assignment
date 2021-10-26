@@ -1,8 +1,8 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import { Router } from "react-router-dom";
-import PokemonCard from "../components/Pokemons1/PokemonCard";
+import PokemonCard from "../components/Pokemons/PokemonCard";
 
 const pokemon = {
   name: "blastoise",
@@ -86,14 +86,10 @@ describe("PokemonCard", () => {
     render(MockPokemonCard);
     const buttonElement = screen.getByRole("button", { name: /Details/i });
     expect(buttonElement).toBeInTheDocument();
-    userEvent.click(buttonElement);
+    act(() => {
+      userEvent.click(buttonElement);
+    });
     expect(history.length).toBe(2);
     expect(history.location.pathname).toBe("/pokemon/blastoise");
   });
 });
-
-describe("Sort Functionality", () => {});
-
-describe("Next Page", () => {});
-
-describe("Items on Page", () => {});

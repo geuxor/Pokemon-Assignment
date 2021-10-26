@@ -18,7 +18,6 @@ function PokemonPage() {
   const [pokemonsCount, setPokemonsCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [cachedEnabled, setCachedEnabled] = useState(false);
-
   const storedLimit = localStorage.getItem("POKEMON_PAGINATION");
   const [limit, setLimit] = useState(parseInt(storedLimit) || 10);
   const storedOffset = localStorage.getItem("POKEMON_OFFSET");
@@ -29,28 +28,23 @@ function PokemonPage() {
       `https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${limit}`
   );
   let storedSearch = localStorage.getItem("POKEMON_SEARCH");
-
   const [search, setSearch] = useState(storedSearch || "");
   const [cachedSearchTerm, setCachedSearchTerm] = useState("");
   const [searchCleared, setSearchCleared] = useState(true);
   // const [filteredItems, setFilteredItems] = useState([]);
   const [searchOn, setSearchOn] = useState(false);
   const [nothingFound, setNothingFound] = useState(false);
-
   const storedAbilitySelection = localStorage.getItem("POKEMON_ABILITY");
   const [abilitySelection, setAbilitySelection] = useState(
     storedAbilitySelection || ""
   );
   const [abilityItems, setAbilityItems] = useState([]);
   const [abilityReset, setAbilityReset] = useState(null);
-
   const [sortedItems, setSortedItems] = useState([]);
   const storedSortSelection = localStorage.getItem("POKEMON_SORT");
   const [sortSelection, setSortSelection] = useState(storedSortSelection || "");
   const [sortReset, setSortReset] = useState(null);
-
   let cachedData = getPokemonFromLocalStorage();
-
   const onCachedEnabled = () => {
     cachedData = getPokemonFromLocalStorage();
     storedSearch = localStorage.getItem("POKEMON_SEARCH");
@@ -62,16 +56,17 @@ function PokemonPage() {
   };
 
   useEffect(() => {
+    let isMounted = true;
     (async () => {
       setIsLoading(true);
       if (storedLimit) setLimit(parseInt(storedLimit));
       if (storedOffset) setOffset(parseInt(storedOffset));
       const res = await pokemonsFetch(currentPageUrl);
       if (offset === 0) res.previous = null;
-      setData(res);
-      setPokemonsCount(res.count);
+      if (isMounted) setData(res);
+      if (isMounted) setPokemonsCount(res.count);
       if (cachedData.length !== res.count) {
-        if (res.results) setPokemons(res.results);
+        if (res.results && isMounted) setPokemons(res.results);
       } else {
         if (search) {
           onSearch(search, "cached");
@@ -81,20 +76,21 @@ function PokemonPage() {
           } else if (abilityItems.length > 0) {
             setPokemons(abilityItems);
           } else {
-            setPokemons(cachedData.slice(offset, offset + limit));
+            if (isMounted) setPokemons(cachedData.slice(offset, offset + limit));
           }
         }
-        setCachedEnabled(true);
+        if (isMounted) setCachedEnabled(true);
       }
       buildPokemonCache(res.count, onCachedEnabled);
-      //end of caching logic
-      setIsLoading(false);
+      if (isMounted) setIsLoading(false);
     })();
+    return () => { isMounted = false }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPageUrl, searchCleared, sortedItems, abilityItems]);
 
   useEffect(
     () => {
+      let isMounted = true;
       const sorts = {
         id: (a, b) => a.id - b.id,
         name: (a, b) => a.name.localeCompare(b.name),
@@ -102,13 +98,16 @@ function PokemonPage() {
         height: (a, b) => a.height - b.height,
         weight: (a, b) => a.weight - b.weight,
       };
-      if (sortSelection) {
+      if (sortSelection && isMounted) {
         setAbilityReset("all");
         setNothingFound(false);
         setSortReset(null);
         setOffset(parseInt(storedOffset));
         setSortedItems(cachedData.sort(sorts[sortSelection]));
       }
+      return () => {
+        isMounted = false;
+      };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [sortSelection]
@@ -116,6 +115,7 @@ function PokemonPage() {
 
   useEffect(
     () => {
+      let isMounted = true;
       (async () => {
         if (abilitySelection !== "all") {
           let foundPokemonsAbility = [];
@@ -135,26 +135,31 @@ function PokemonPage() {
                   foundPokemonsAbility.push(cachedData[id - 1]);
               }
             }
-            if (foundPokemonsAbility.length === 0 && abilitySelection) {
-              // alert("nothing found");
-              // return <div>Nothing found</div>;
-              setNothingFound(true);
-            } else {
-              setNothingFound(false);
-              setSortedItems([]);
-              setAbilityReset(null);
-              setSortReset("id");
-              setAbilityItems(foundPokemonsAbility);
-              setOffset(0);
+            if (isMounted) {
+              if (foundPokemonsAbility.length === 0 && abilitySelection) {
+                // alert("nothing found");
+                // return <div>Nothing found</div>;
+                setNothingFound(true);
+              } else {
+                setNothingFound(false);
+                setSortedItems([]);
+                setAbilityReset(null);
+                setSortReset("id");
+                setAbilityItems(foundPokemonsAbility);
+                setOffset(0);
+              }
             }
           } catch (err) {
             console.log(err);
           }
-        } else {
+        } else if (isMounted) {
           setAbilityItems([]);
           setNothingFound(false);
         }
       })();
+      return () => {
+        isMounted = false;
+      };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [abilitySelection]
