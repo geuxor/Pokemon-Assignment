@@ -15,13 +15,13 @@ This app is accompanied by unit tests
 
 
 # Functionality
-• User can choose the number of cards available per page (10, 20 and 50)
-• User can see previous and next buttons - on both the top and the bottom of the page
-• User can search through the list using the name and abilities
-• User can sort results by id, name ASC, name DESC, height and weight
-• User can refresh the page whilst maintaining sorting, ability and search data
-• User can see a details page with all information for each Pokémon
-• User can go back to the previous page
+• User can choose the number of cards available per page (10, 20 and 50)\
+• User can see previous and next buttons - on both the top and the bottom of the page\
+• User can search through the list using the name and abilities\
+• User can sort results by id, name ASC, name DESC, height and weight\
+• User can refresh the page whilst maintaining sorting, ability and search data\
+• User can see a details page with all information for each Pokémon\
+• User can go back to the previous page\
 
 
 # Getting Started
