@@ -26,7 +26,8 @@ This app is accompanied by unit tests
 
 # Getting Started
 ## Environment Variables
-Please add the following lines to your ".env" file located in your Root Folder. If it does not exist it needs to be created.
+Please add the following lines to your ".env" file located in your Root Folder. If it does not exist it needs to be created. 
+Alternatively you can rename `env.example` to `.env` in your root folder.
 
 >REACT_APP_POKEMON_API=https://pokeapi.co/api/v2
 
