@@ -7,14 +7,13 @@ const pokemonsFetch = (currentPageUrl) => {
       return res.json();
     })
     .then((data) => {
-      console.log("Fetch: data", data);
       return data;
     })
     .catch((err) => {
-      console.warn(err);
+      console.log(err)
     });
 };
 
-pokemonsFetch().then((response) => console.log("response", response));
+// pokemonsFetch().then((response) => console.log(response));
 
 export default pokemonsFetch;

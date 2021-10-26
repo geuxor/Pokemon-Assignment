@@ -3,80 +3,46 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { Button } from "antd";
 import { Card } from "antd";
-import "./PokemonCard.style.css";
-import spinner from "./spinner.gif";
+import "../../styles/Pokemon.style.css";
+import spinner from "../../assets/images/spinner.gif";
 import pokemonApi from "../../services/pokemonApi";
 
 function PokemonCard({ pokemon, currentPageUrl, offset }) {
-  // console.log("Card: pokemon ----", pokemon, url, pokemonName, onCached, abilityId);
   const [loading, setLoading] = useState(true);
   const [pokemonDetails, setPokemonDetail] = useState({});
-  // const [pokemonDetailIndex, setPokemonDetailIndex] = useState();
+
   const [abilities, setAbilities] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
-  // const [, setPokemonIndex] = useState("");
+
   const [imageLoading, setImageLoading] = useState(true);
   const history = useHistory();
-  // console.log("Card: abilityId", abilityId);
 
   useEffect(() => {
     (async () => {
       const pokemonDetailData = {};
       let pokeData = [];
-      // console.log('oncached length', pokemon.id);
-      // console.log("idFromUrl", pokemon.id);
-      // if (!pokemon.id) {
-      // const idFromUrl = url.split("/")[url.split("/").length - 1];
-      // setPokemonDetailIndex(idFromUrl);
-      // }
+
       try {
         if (pokemon.id) {
           pokeData = pokemon;
-          // console.log("Card: Checking pokemon", pokeData);
+
           pokemonDetailData.image = pokeData.image;
-          // pokemonDetailData.id = pokeData.id;
-          // } else {
-          // const pokemonFromLocalStorage = getPokemonFromLocalStorage();
-          // if (pokemonFromLocalStorage.length === count) {
-          //   console.log("Card: fetching data from Cache");
-          //   // , pokemonFromLocalStorage.length);
-          //   // console.log(
-          //   //   "ID",
-          //   //   url.split("/")[url.split("/").length - 2],
-          //   //   pokemonFromLocalStorage[url.split("/")[url.split("/").length - 2]]
-          //   // );
-          //   pokeData =
-          //     pokemonFromLocalStorage[
-          //       url.split("/")[url.split("/").length - 2]
-          //     ];
-          //   console.log("Card pokemonDetailData:", pokemonDetailData.image);
-          //   pokemonDetailData.image = pokeData.image;
         } else {
           const response = await pokemonApi.getPokemonDetails(pokemon.name);
-          // console.log('getPokemonDetails', response);
+
           pokeData = response.data;
           pokemonDetailData.image =
             pokeData.sprites.other["official-artwork"].front_default;
-          // const idFromUrl = url.split("/")[url.split("/").length - 1];
-          // setPokemonDetailIndex(idFromUrl);
         }
 
-        // }
         pokemonDetailData.id = pokeData.id;
         pokemonDetailData.name = pokeData.name;
         pokemonDetailData.height = pokeData.height;
         pokemonDetailData.weight = pokeData.weight;
         pokemonDetailData.abilities = pokeData.abilities;
-        // console.log("Card: created ", pokemonDetailData);
-        // console.log("------------", pokemonDetailData);
-        // console.log("pokecacData", pokeCachedData);
-        // onCached(pokemonDetailData);
-        // setHeight(pokemonDetailData.height);
-        // setWeight(pokemonDetailData.weight);
-        // console.log("******* x ********", pokemonDetailData.abilities);
+
         setAbilities(pokemonDetailData.abilities);
 
-        // setPokemonIndex(url.split("/")[url.split("/").length - 2]);
         pokemonDetailData.image
           ? setImageUrl(pokemonDetailData.image)
           : setImageUrl(
@@ -95,21 +61,14 @@ function PokemonCard({ pokemon, currentPageUrl, offset }) {
   }, [pokemon]);
 
   const showDetails = () => {
-    // history.push(`/pokemon/${pokemon.name}`);
-    // history.push({
-    //   pathname: `/pokemon/${pokemon.name}`,
-    //   state: { detail: "response" },
-    // });
-    console.log("Card: currentPageUrl", currentPageUrl);
-    
     history.push(`/pokemon/${pokemon.name}`, {
-      currentPageUrl: currentPageUrl
+      currentPageUrl: currentPageUrl,
     });
   };
 
   return (
     <>
-      <div className="site-card-border-less-wrapper">
+      <div className="card-wrapper">
         {loading ? (
           <div className="spinner">
             <img src={spinner} alt="pokemon pic" />
@@ -144,7 +103,7 @@ function PokemonCard({ pokemon, currentPageUrl, offset }) {
 
                     <ul className="types-list" style={{ listStyle: "none" }}>
                       {abilities.map((a, i) => {
-                        return <li key={i.toString()}>{a.ability.name}</li>;
+                        return <li key={i}>{a.ability.name}</li>
                       })}
                     </ul>
                   </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 const useFetch = (currentPageUrl) => {
   const [data, setData] = useState(null);
@@ -7,8 +7,6 @@ const useFetch = (currentPageUrl) => {
 
   useEffect(() => {
     const abortCont = new AbortController();
-    console.log("Fetch: url", currentPageUrl);
-
     setTimeout(() => {
       fetch(currentPageUrl, { signal: abortCont.signal })
         .then((res) => {
@@ -18,7 +16,6 @@ const useFetch = (currentPageUrl) => {
           return res.json();
         })
         .then((data) => {
-          console.log("Fetch: data", data);
           setIsLoading(false);
           setData(data);
           setError(null);
@@ -38,5 +35,5 @@ const useFetch = (currentPageUrl) => {
 
   return { data, isLoading, error };
 };
- 
+
 export default useFetch;

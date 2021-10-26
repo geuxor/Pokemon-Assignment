@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import pokemonApi from "../../services/pokemonApi";
 
-function PokemonsSort({
+function Sort({
   onAbilitySort,
   onSort,
   searchOn,
@@ -13,16 +13,8 @@ function PokemonsSort({
 }) {
   const [abilities, setAbilities] = useState([{ name: "all" }]);
   const [storedAbility, setStoredAbility] = useState([]);
-  console.log(
-    "Pokemon Sort sortSelection",
-    sortSelection,
-    abilityReset,
-    sortReset
-  );
 
   useEffect(() => {
-    console.log("Pokemon Sort -on Ability Sort useEffect");
-
     (async () => {
       try {
         const response = await pokemonApi.getPokemonAbilities();
@@ -32,14 +24,15 @@ function PokemonsSort({
         ability.target.value = localStorage.getItem("POKEMON_ABILITY");
         setStoredAbility(ability.target.value);
         if (ability.target.value) {
-          // console.log(ability, " found on localstorage");
           onAbilitySort(ability);
         }
       } catch (err) {
         console.log(err);
       }
     })();
-
+    return () => {
+      setAbilities([]);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -68,7 +61,6 @@ function PokemonsSort({
           weight
         </option>
       </select>{" "}
-      {console.log("abilities--", cachedDataLength)}
       Abilities:
       <select
         disabled={cachedDataLength < 1118 && true}
@@ -115,4 +107,4 @@ function PokemonsSort({
   );
 }
 
-export default PokemonsSort;
+export default Sort;

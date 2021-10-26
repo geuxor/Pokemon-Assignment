@@ -1,4 +1,4 @@
-import "./PokemonPage.style.css";
+import "../../styles/Pokemon.style.css";
 export default function Pagination({
   gotoNextPage,
   gotoPrevPage,
@@ -6,12 +6,8 @@ export default function Pagination({
   pokemonsPerPage,
   onPrevNextPageChange,
 }) {
-
   return (
     <div>
-      {console.log("Pagination: pokemonsPerPage", pokemonsPerPage)}
-      {console.log("Pagination: next/prev", gotoPrevPage, gotoNextPage)}
-
       <div className="pagination-buttons">
         {gotoPrevPage && (
           <button onClick={() => onPrevNextPageChange(gotoPrevPage, "prev")}>
@@ -31,13 +27,10 @@ export default function Pagination({
               onItemsPerPageChange(Number(e.target.value));
             }}
           >
-            {[10, 20, 50].map((itemsPerPage) => (
-              <>
-                {console.log("Pagination pokemonsPerPage", pokemonsPerPage)}
-                <option key={itemsPerPage} value={itemsPerPage}>
-                  Show {itemsPerPage}
-                </option>
-              </>
+            {[10, 20, 50].map((itemsPerPage, i) => (
+              <option key={i} value={itemsPerPage}>
+                Show {itemsPerPage}
+              </option>
             ))}
           </select>
         )}
